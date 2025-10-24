@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسبحة إلكترونية</title>
+    <!-- تحميل Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تحميل خط Cairo من Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* تطبيق خط Cairo على كامل الصفحة */
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+        /* لضمان ارتفاع ثابت للعنوان ومنع اهتزاز الواجهة */
+        #activeTasbeeh {
+            min-height: 50px;
+        }
+    </style>
+</head>
+<body class="bg-teal-50 flex items-center justify-center min-h-screen p-4 py-8">
+
+    <!-- حاوية المسبحة -->
+    <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-md text-center transform transition-all duration-300">
+        
+        <!-- العنوان (التسبيح النشط) -->
+        <h1 id="activeTasbeeh" class="text-4xl font-bold text-teal-800 mb-4 transition-all">
+            سبحان الله
+        </h1>
+
+        <!-- شاشة عرض العداد -->
+        <div id="counter" class="text-9xl font-black text-teal-600 my-8" aria-live="polite">
+            0
+        </div>
+
+        <!-- زر التسبيح (الزيادة) -->
+        <button id="incrementButton" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-8 rounded-2xl text-3xl shadow-lg transform transition-transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-teal-300 active:scale-95 mb-8">
+            تسبيح
+        </button>
+
+        <!-- أزرار التسبيح المحددة مسبقًا -->
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <button class="preset-btn bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold py-3 px-4 rounded-lg transition-colors w-full">
+                الحمدلله
+            </button>
+            <button class="preset-btn bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold py-3 px-4 rounded-lg transition-colors w-full">
+                لا إله الا الله
+            </button>
+            <button class="preset-btn bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold py-3 px-4 rounded-lg transition-colors w-full">
+                استغفرالله
+            </button>
+            <button class="preset-btn bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold py-3 px-4 rounded-lg transition-colors w-full">
+                الله اكبر
+            </button>
+        </div>
+
+        <!-- خانة التسبيح المخصص -->
+        <div class="mb-8 space-y-3">
+            <input type="text" id="customTasbeehInput" placeholder="اكتب تسبيحك..." class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-center focus:ring-teal-500 focus:border-teal-500">
+            <button id="setCustomButton" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 rounded-lg transition-colors">
+                تطبيق التسبيح المخصص
+            </button>
+        </div>
+
+        <!-- زر إعادة الضبط -->
+        <button id="resetButton" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-8 rounded-full text-base focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors">
+            إعادة ضبط العداد
+        </button>
+
+    </div>
+
+    <script>
+        // الحصول على عناصر الواجهة
+        const activeTasbeehDisplay = document.getElementById('activeTasbeeh');
+        const counterDisplay = document.getElementById('counter');
+        const incrementButton = document.getElementById('incrementButton');
+        const resetButton = document.getElementById('resetButton');
+        const presetButtons = document.querySelectorAll('.preset-btn');
+        const customTasbeehInput = document.getElementById('customTasbeehInput');
+        const setCustomButton = document.getElementById('setCustomButton');
+
+        // متغيرات لتخزين الحالة
+        let count = 0;
+        let activeTasbeeh = "سبحان الله"; // القيمة الافتراضية
+
+        // وظيفة لتحديث شاشة عرض العداد
+        function updateCounterDisplay() {
+            counterDisplay.textContent = count;
+        }
+
+        // وظيفة لتحديث عنوان التسبيح
+        function updateTasbeehTitle() {
+            activeTasbeehDisplay.textContent = activeTasbeeh;
+        }
+
+        // وظيفة لضبط تسبيح جديد (وتصفير العداد)
+        function setActiveTasbeeh(newTasbeeh) {
+            activeTasbeeh = newTasbeeh;
+            count = 0;
+            updateTasbeehTitle();
+            updateCounterDisplay();
+        }
+
+        // --- إضافة مستمعي الأحداث ---
+
+        // عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTasbeehTitle();
+            updateCounterDisplay();
+        });
+
+        // زر التسبيح (الزيادة)
+        incrementButton.addEventListener('click', () => {
+            count++;
+            updateCounterDisplay();
+            // إضافة اهتزاز خفيف عند الضغط (للموبايل)
+            if (navigator.vibrate) {
+                navigator.vibrate(50); // 50 مللي ثانية اهتزاز
+            }
+        });
+
+        // زر إعادة الضبط
+        resetButton.addEventListener('click', () => {
+            count = 0;
+            updateCounterDisplay();
+        });
+
+        // أزرار التسبيح المحددة مسبقًا
+        presetButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const newTasbeeh = button.textContent;
+                setActiveTasbeeh(newTasbeeh);
+            });
+        });
+
+        // زر تطبيق التسبيح المخصص
+        setCustomButton.addEventListener('click', () => {
+            const newTasbeeh = customTasbeehInput.value.trim();
+            if (newTasbeeh) { // تأكد من أن المستخدم كتب شيئًا
+                setActiveTasbeeh(newTasbeeh);
+                customTasbeehInput.value = ""; // تفريغ الخانة بعد التطبيق
+            }
+        });
+        
+        // السماح بالضغط على "Enter" في خانة الإدخال
+        customTasbeehInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                setCustomButton.click(); // محاكاة الضغط على الزر
+            }
+        });
+
+    </script>
+
+</body>
+</html>
+
